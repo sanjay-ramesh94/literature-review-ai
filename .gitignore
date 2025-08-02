@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment (if you use one named 'venv' or '.venv')
+venv/
+.venv/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+node_modules
+package*
+downloaded_papers

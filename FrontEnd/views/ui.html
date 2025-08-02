@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Accelerator</title>
+    <style>
+        :root {
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --primary: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --border-radius: 0.375rem;
+            --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        textarea, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(74, 111, 165, 0.25);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        button:disabled {
+            background-color: var(--secondary);
+            cursor: not-allowed;
+        }
+        
+        .paper {
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .paper:hover {
+            box-shadow: var(--shadow);
+        }
+        
+        .paper-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .paper-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        
+        .paper-abstract {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        
+        .paper-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .paper-actions a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            transition: background-color 0.15s ease-in-out;
+        }
+        
+        .paper-actions a:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 0.25rem solid rgba(74, 111, 165, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            color: var(--danger);
+            padding: 1rem;
+            background-color: #f8d7da;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ced4da;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.15s ease-in-out;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+        }
+        
+        .file-list {
+            margin-top: 1rem;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .summary-section h3 {
+            color: #1d4ed8;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+        
+        .summary-content {
+            line-height: 1.7;
+        }
+        
+        .summary-content ul {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        .summary-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-warning {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Research Library</h2>
+            <div class="file-upload" id="file-upload">
+                <p>Drag & drop files here or click to browse</p>
+                <input type="file" id="file-input" multiple accept=".pdf" style="display: none;">
+            </div>
+            <button id="analyze-files-btn" style="display: none;">Analyze Uploaded Files</button>
+            <div class="file-list" id="file-list"></div>
+        </aside>
+        
+        <main class="main-content">
+            <h1>AI Research Accelerator</h1>
+            <p class="subtitle">Automated literature review and summarization tool</p>
+            
+            <div class="form-group">
+                <label for="query">Research Topic or Keywords</label>
+                <textarea id="query" placeholder="Enter your research topic, keywords, or question..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="limit">Number of Papers</label>
+                <input type="number" id="limit" min="1" max="50" value="10">
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="require-pdf">
+                <label for="require-pdf">Only papers with PDF available</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="summarize">
+                <label for="summarize">Generate AI summaries</label>
+            </div>
+            
+            <button id="search-btn">Search Papers</button>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <div id="results"></div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('file-upload');
+            const fileInput = document.getElementById('file-input');
+            const fileList = document.getElementById('file-list');
+            const analyzeFilesBtn = document.getElementById('analyze-files-btn');
+            const searchBtn = document.getElementById('search-btn');
+            const queryInput = document.getElementById('query');
+            const limitInput = document.getElementById('limit');
+            const requirePdfCheckbox = document.getElementById('require-pdf');
+            const summarizeCheckbox = document.getElementById('summarize');
+            const loadingIndicator = document.getElementById('loading');
+            const errorDisplay = document.getElementById('error');
+            const resultsContainer = document.getElementById('results');
+            
+            const uploadedFiles = new Map();
+            const cacheKeyPrefix = 'research_accelerator_';
+            
+            // Load cached results
+            function loadCachedResults(query, limit, requirePdf) {
+                const cacheKey = `${cacheKeyPrefix}${query}:${limit}:${requirePdf}`;
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) {
+                    try {
+                        const papers = JSON.parse(cached);
+                        displayResults(papers);
+                        return true;
+                    } catch (e) {
+                        console.error('Failed to parse cached results:', e);
+                    }
+                }
+                return false;
+            }
+            
+            // Save results to cache
+            function saveCachedResults(query, limit, requirePdf, papers) {
+                const cacheKey = `${cacheKeyPrefix}${query}:${limit}:${requirePdf}`;
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify(papers));
+                } catch (e) {
+                    console.error('Failed to cache results:', e);
+                }
+            }
+            
+            // File upload handling
+            fileUpload.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                Array.from(e.target.files).forEach(file => {
+                    if (!uploadedFiles.has(file.name)) {
+                        uploadedFiles.set(file.name, file);
+                        renderFileList();
+                    }
+                });
+                fileInput.value = '';
+            });
+            
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.style.borderColor = '#4a6fa5';
+            });
+            
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.style.borderColor = '#ced4da';
+            });
+            
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.style.borderColor = '#ced4da';
+                Array.from(e.dataTransfer.files).forEach(file => {
+                    if (!uploadedFiles.has(file.name) && file.type === 'application/pdf') {
+                        uploadedFiles.set(file.name, file);
+                        renderFileList();
+                    }
+                });
+            });
+            
+            function renderFileList() {
+                fileList.innerHTML = '';
+                if (uploadedFiles.size === 0) {
+                    fileList.innerHTML = '<p>No files uploaded yet</p>';
+                    analyzeFilesBtn.style.display = 'none';
+                    return;
+                }
+                
+                analyzeFilesBtn.style.display = 'block';
+                uploadedFiles.forEach((file, name) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span>${name}</span>
+                        <button class="remove-file" data-name="${name}">×</button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+                
+                document.querySelectorAll('.remove-file').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const fileName = e.target.getAttribute('data-name');
+                        uploadedFiles.delete(fileName);
+                        renderFileList();
+                    });
+                });
+            }
+            
+            // Analyze uploaded files
+            analyzeFilesBtn.addEventListener('click', async () => {
+                if (uploadedFiles.size === 0) {
+                    showError('No files to analyze');
+                    return;
+                }
+                
+                try {
+                    loadingIndicator.style.display = 'flex';
+                    errorDisplay.style.display = 'none';
+                    resultsContainer.innerHTML = '';
+                    
+                    const formData = new FormData();
+                    uploadedFiles.forEach(file => formData.append('files', file));
+                    
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+                        throw new Error(error.error || 'Failed to analyze files');
+                    }
+                    
+                    const results = await response.json();
+                    displayResults(results);
+                } catch (error) {
+                    showError(error.message);
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+            
+            // Search functionality
+            searchBtn.addEventListener('click', async () => {
+                const query = queryInput.value.trim();
+                const limit = parseInt(limitInput.value);
+                const requirePdf = requirePdfCheckbox.checked;
+                const summarize = summarizeCheckbox.checked;
+                
+                if (!query) {
+                    showError('Please enter a search query');
+                    return;
+                }
+                
+                if (isNaN(limit) || limit < 1 || limit > 50) {
+                    showError('Please enter a valid number of papers (1-50)');
+                    return;
+                }
+                
+                // Check cache first
+                if (loadCachedResults(query, limit, requirePdf)) {
+                    return;
+                }
+                
+                const maxRetries = 3;
+                let attempt = 0;
+                while (attempt < maxRetries) {
+                    try {
+                        loadingIndicator.style.display = 'flex';
+                        errorDisplay.style.display = 'none';
+                        resultsContainer.innerHTML = '';
+                        
+                        const response = await fetch('/search', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                query,
+                                limit,
+                                requirePdf,
+                                summarize
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+                            throw new Error(error.error || 'Failed to fetch results');
+                        }
+                        
+                        const papers = await response.json();
+                        displayResults(papers);
+                        saveCachedResults(query, limit, requirePdf, papers);
+                        break;
+                    } catch (error) {
+                        attempt++;
+                        if (attempt === maxRetries) {
+                            showError(error.message);
+                            break;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                    } finally {
+                        loadingIndicator.style.display = 'none';
+                    }
+                }
+            });
+            
+            function displayResults(papers) {
+                resultsContainer.innerHTML = '';
+                if (!papers || papers.length === 0) {
+                    resultsContainer.innerHTML = '<p>No papers found matching your criteria</p>';
+                    return;
+                }
+                
+                papers.forEach(paper => {
+                    const paperElement = document.createElement('div');
+                    paperElement.className = 'paper';
+                    
+                    let authors = 'Unknown authors';
+                    if (paper.authors && paper.authors.length > 0) {
+                        authors = paper.authors.join(', ');
+                    }
+                    
+                    let abstract = paper.abstract || 'No abstract available';
+                    if (abstract.length > 500) {
+                        abstract = abstract.substring(0, 500) + '...';
+                    }
+                    
+                    let pdfButton = paper.pdfUrl 
+                        ? `<a href="${paper.pdfUrl}" target="_blank">📄 View PDF</a>`
+                        : '<span>No PDF available</span>';
+                    
+                    paperElement.innerHTML = `
+                        <h2 class="paper-title">${paper.title || 'Untitled'}</h2>
+                        <div class="paper-meta">
+                            <span>${paper.year || 'Unknown year'}</span>
+                            <span>${authors}</span>
+                        </div>
+                        <div class="paper-abstract">
+                            <h3>Abstract</h3>
+                            <p>${abstract}</p>
+                        </div>
+                        <div class="paper-actions">
+                            ${pdfButton}
+                        </div>
+                    `;
+                    
+                    if (paper.summary) {
+                        const isError = paper.summary.includes('unavailable') || 
+                                      paper.summary.includes('Error:');
+                        const summaryHTML = `
+                            <div class="summary-section">
+                                <h3>${isError ? 'Summary Status' : 'AI Analysis'}</h3>
+                                <div class="summary-content">
+                                    ${isError ? 
+                                        `<p>${paper.summary}</p>` : 
+                                        `<p>${paper.summary.replace(/\n/g, '<br>')}</p>`
+                                    }
+                                    ${paper.summary.includes('abstract only') ? 
+                                        '<div class="summary-warning">  </div>' : ''}
+                                </div>
+                            </div>
+                        `;
+                        paperElement.innerHTML += summaryHTML;
+                    }
+                    
+                    resultsContainer.appendChild(paperElement);
+                });
+            }
+            
+            function showError(message) {
+                errorDisplay.textContent = message;
+                errorDisplay.style.display = 'block';
+            }
+            
+            renderFileList();
+        });
+    </script>
+</body>
+</html>

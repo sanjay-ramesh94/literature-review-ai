@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Review</title>
+<style>
+    :root {
+        --cotton-pink: #ffb6e6;
+        --cotton-blue: #b6eaff;
+        --deep-pink: #ff75c3;
+        --deep-blue: #75c3ff;
+        --font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        --text-color-base: #2d3748; /* Dark Gray */
+        --heading-color: #1a202c; /* Near Black */
+        --background-body: #f7fafc; /* Light gray */
+        --background-container: #ffffff;
+        --border-color-light: #e2e8f0;
+        --border-radius-lg: 0.75rem;
+        --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --danger-color: #c53030;
+    }
+
+    body {
+        font-family: var(--font-family-base);
+        background-color: var(--background-body);
+        color: var(--text-color-base);
+        line-height: 1.7;
+        padding: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        background-color: var(--background-container);
+        border-radius: var(--border-radius-lg);
+        padding: 30px 40px;
+        box-shadow: var(--box-shadow-lg);
+        max-width: 900px;
+        width: 100%;
+        border: 1px solid var(--border-color-light);
+    }
+
+    .main-heading {
+        color: var(--heading-color);
+        border-bottom: 2px solid var(--border-color-light);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.6em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+     .main-heading svg {
+         width: 24px; height: 24px; color: var(--deep-blue);
+     }
+
+
+    #review-display-area {
+        font-size: 1rem;
+    }
+
+    /* Style for parsed headings */
+    #review-display-area h3 {
+        font-size: 1.25em;
+        color: var(--deep-blue); /* Use deep blue for standard headings */
+        margin-top: 1.8rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--border-color-light);
+        font-weight: 600;
+    }
+
+    /* Specific style for Conclusion/Implications heading */
+    #review-display-area h3.conclusion-implications {
+        color: var(--deep-pink); /* Use deep pink as requested */
+        border-bottom-color: var(--cotton-pink);
+    }
+
+    /* Style for paragraphs */
+    #review-display-area p {
+        margin-bottom: 1rem;
+        text-align: justify; /* Justify text for a cleaner look */
+    }
+     /* Add space after last paragraph before next heading */
+     #review-display-area p:last-of-type {
+        margin-bottom: 1.8rem;
+     }
+
+
+    .error-message {
+        color: var(--danger-color);
+        font-weight: 500;
+        text-align: center;
+        padding: 2rem;
+        border: 1px dashed var(--danger-color);
+        border-radius: var(--border-radius-lg);
+        background-color: #fff5f5;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="main-heading">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M3 15h6"/><path d="M6 18h3"/></svg>
+         Generated Document Review
+    </h1>
+    <div id="review-display-area">
+        <p>Loading review...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const reviewDisplayArea = document.getElementById('review-display-area');
+        const rawReviewText = sessionStorage.getItem('reviewData'); // Key must match ui.html
+
+        if (!reviewDisplayArea) {
+             console.error("Could not find the review display area element.");
+             return; // Stop if display area missing
+        }
+
+        if (rawReviewText) {
+            console.log("Review data found in sessionStorage.");
+            reviewDisplayArea.innerHTML = ''; // Clear loading message
+
+            // Attempt to parse markdown-style headings (e.g., **Heading:**)
+            // Split by potential heading markers followed by newlines
+            const sections = rawReviewText.split(/(?:\r?\n|^)\*\*([^*]+):\*\*(?:\r?\n|$)/);
+
+            let firstContent = true;
+            for (let i = 0; i < sections.length; i++) {
+                const content = sections[i].trim();
+                if (!content) continue; // Skip empty sections
+
+                if (i % 2 === 1) {
+                    // This is a heading (captured by the regex group)
+                    const heading = document.createElement('h3');
+                    heading.innerText = content; // Set heading text
+                    // Apply special class for Conclusion/Implications
+                    if (content.toLowerCase().includes('conclusion') || content.toLowerCase().includes('implication')) {
+                        heading.classList.add('conclusion-implications');
+                    }
+                    reviewDisplayArea.appendChild(heading);
+                    firstContent = true; // Reset for paragraphs under new heading
+                } else {
+                    // This is content (either before first heading or between headings)
+                    // Split content further by lines if needed, or treat as one block
+                    const paragraphs = content.split(/\r?\n/).filter(p => p.trim() !== ''); // Split by newline, remove empty lines
+
+                    paragraphs.forEach(paraText => {
+                         const paragraph = document.createElement('p');
+                         paragraph.innerText = paraText; // Use innerText for safety
+                         reviewDisplayArea.appendChild(paragraph);
+                    });
+
+                    // Handle content that appeared before the very first heading
+                    if (firstContent && i === 0 && paragraphs.length > 0) {
+                         // Optional: Style this differently if needed
+                    }
+                    firstContent = false;
+                }
+            }
+             // Fallback if no headings were parsed (treat whole text as one block)
+             if (reviewDisplayArea.children.length === 0) {
+                 const paragraph = document.createElement('p');
+                 paragraph.innerText = rawReviewText;
+                 reviewDisplayArea.appendChild(paragraph);
+             }
+
+            // Optional: Clear the item if desired
+            // sessionStorage.removeItem('reviewData');
+        } else {
+            console.error("No review data found in sessionStorage.");
+            reviewDisplayArea.innerHTML = '<p class="error-message">No review data found. Please go back and generate a review first.</p>';
+        }
+    });
+</script>
+
+</body>
+</html>
