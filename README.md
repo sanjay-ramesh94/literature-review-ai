@@ -1,11 +1,11 @@
-# Literature Review AI - Hackathon Project
+# Literature Review AI 
 
 
 ## Setup
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/Velavan5/literature-review-ai.git
+    git clone https://github.com/sanjay-ramesh94/literature-review-ai.git
     cd literature-review-ai
     ```
 
